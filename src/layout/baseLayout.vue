@@ -3,7 +3,7 @@
     <a-layout-sider v-model="collapsed" collapsible>
       <div class="bg_shaodw"></div>
       <div class="bg_image">
-        <img src="http://mpadmin.liuwenyong.com/img/sidebar-2.1fed358a.jpg" alt="" />
+        <img :src="require('@/assets/sidebar.jpg')" alt="" />
       </div>
       <div class="logo" v-if="!collapsed">
         <h3>LOGO</h3>
