@@ -1,11 +1,15 @@
 import axios from 'axios';
 import vm from '../main';
+import router from '@/router';
 
-const succeeCode = 1; // 成功
+const succeeCode = '0'; // 成功
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_API,
   timeout: 20000, // 请求超时时间
+  headers: {
+    login_code: localStorage.getItem('login_code'),
+  },
   // withCredentials: true,
 });
 
@@ -32,16 +36,32 @@ const errorHandle = (status, err) => {
 service.interceptors.response.use(
   response => {
     if (response.status === 200) {
-      // 你只需改动的是这个 succeeCode，因为每个项目的后台返回的 code 码各不相同
-
-      // if (response.data.code === succeeCode) {
-      return Promise.resolve(response);
+      // debugger;
+      if (typeof response.data.code == 'undefined') return Promise.resolve(response.data);
+      if (response.data.code == succeeCode) {
+        return Promise.resolve(response.data);
+      }
+      switch (response.data.code) {
+        case '1':
+          vm.$message.warning(response.data.message);
+          return Promise.reject(response.data);
+        case '-1':
+          return router.push({
+            path: '/login',
+          });
+        case '2':
+          vm.$message.warning(response.data.message);
+          return Promise.reject(response.data);
+        default:
+          vm.$message.warning(response.data.message);
+          return Promise.reject(response.data);
+      }
       // } else {
       //   vm.$message({ message: '警告哦，这是一条警告消息', type: 'warning' });
       //   return Promise.reject(response);
       // }
     } else {
-      return Promise.reject(response);
+      return Promise.reject(response.data);
     }
   },
   error => {
@@ -49,7 +69,7 @@ service.interceptors.response.use(
     if (response) {
       // 请求已发出，但是不在 2xx 的范围
       errorHandle(response.status, response.data.msg);
-      return Promise.reject(response);
+      return Promise.reject(response.data);
     } else {
       // 处理断网的情况
       if (!window.navigator.onLine) {

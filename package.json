@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "ali-oss": "^6.10.0",
     "ant-design-vue": "^1.6.4",
     "axios": "^0.19.2",
     "core-js": "^3.6.5",
